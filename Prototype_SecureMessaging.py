@@ -1,6 +1,7 @@
 
 import time
 
+
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 
@@ -35,4 +36,26 @@ def encrypt_aes(plaintext):
 
 
 
-# next
+# AES Decryption Function
+
+def decrypt(data):
+    """
+
+    Decrypts AES ciphertext and verifies integrity
+    using the authentication tag
+    """
+    # Recrates cipher sung same key and nonce
+    cipher = AES.new(data["key"], AES.MODE_GCM, nonce=data["nonce"])
+
+    # Start decryption timing
+    start = time.time()\
+
+    # Decrypts and verifies ciphertext
+    plaintext = cipher.decrypt_and_verify(data["ciphertext"], data["tag"])
+
+    # End timing decryption
+    end = time.time()
+
+    return plaintext.decode(), end - start
+
+

@@ -4,6 +4,8 @@ import time
 
 from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
+from pyexpat.errors import messages
+
 
 # AES ENCRYPTION FUNCTION
 
@@ -38,7 +40,7 @@ def encrypt_aes(plaintext):
 
 # AES Decryption Function
 
-def decrypt(data):
+def decrypt_aes(data):
     """
 
     Decrypts AES ciphertext and verifies integrity
@@ -59,3 +61,30 @@ def decrypt(data):
     return plaintext.decode(), end - start
 
 
+
+
+print("Secure Messaging prototype\n")
+
+# Ask user for input
+message = input("Enter your Message: ")
+
+print("\nChoose algorithm:")
+print("1. AES")
+print("2. Chacha20")
+choice = input("Enter 1 0r 2: ")
+
+# If Aes is selected
+if choice == "1":
+    print("\n AES Selected ")
+
+    # Encrypts message
+    encrypted = encrypt_aes(message)
+
+    # Decrypts message
+    decrypted_text, dec_time = decrypt_aes(encrypted)
+
+    # Display results
+    print("\nCiphertext:", encrypted["ciphertext"])
+    print("Decrypted Text:", decrypted_text)
+    print(f"AES Encryption Time: {encrypted['time']:.6f} seconds")
+    print(f"AES Decryption Time: {dec_time:.6f} seconds")

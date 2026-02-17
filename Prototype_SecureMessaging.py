@@ -1,13 +1,74 @@
-
 import time
-
-
 from Crypto.Cipher import AES, ChaCha20
 from Crypto.Random import get_random_bytes
 
 
+# CORRECTNESS VALIDATION (TEST VECTORS)
+# AES (AES)
+def validate_aes():
+    print("Running AES validation test (AES")
 
-# AES ENCRYPTION FUNCTION
+    key = bytes.fromhex("00000000000000000000000000000000")
+    plaintext = bytes.fromhex("f34481ec3cc627bacd5dc3fb08f273e6")
+    expected_ciphertext = bytes.fromhex("0336763e966d92595a567cc9ce537f5e")
+
+    cipher = AES.new(key, AES.MODE_ECB)
+    result = cipher.encrypt(plaintext)
+
+    if result == expected_ciphertext:
+        print("AES test vector validation: PASS\n")
+        return True
+    else:
+        print("AES test vector validation: FAIL\n")
+        return False
+
+# ChaCha20
+
+def validate_chacha20():
+    print("Running ChaCha20 test vector")
+
+    key = bytes.fromhex(
+        "000102030405060708090a0b0c0d0e0f"
+        "101112131415161718191a1b1c1d1e1f"
+    )
+    nonce = bytes.fromhex("000000000000004a00000000")
+    plaintext = b"Ladies and Gentlemen of the class of '99: If I c"
+
+    expected = bytes.fromhex(
+        "6e2e359a2568f98041ba0728dd0d6981"
+        "e97e7aec1d4360c20a27afccfd9fae0b"
+        "f91b65c5524733ab8f593dabcd62b357"
+    )
+
+    cipher = ChaCha20.new(key=key, nonce=nonce)
+
+    cipher.encrypt(b"\x00" * 64)
+
+    result = cipher.encrypt(plaintext)
+
+    if result == expected:
+        print("ChaCha20 test vector validation: PASS\n")
+        return True
+    else:
+        print("ChaCha20 test vector validation: FAIL\n")
+        print("Got:     ", result.hex())
+        print("Expected:", expected.hex(), "\n")
+        return False
+
+
+def run_validation_or_exit():
+    ok_aes = validate_aes()
+    ok_chacha = validate_chacha20()
+    if not (ok_aes and ok_chacha):
+        raise SystemExit("ERROR: One or more validations failed.")
+
+
+
+
+
+
+
+# AES ENCRYPTION FUNCTION.
 
 def encrypt_aes(plaintext):
     """
@@ -23,7 +84,7 @@ def encrypt_aes(plaintext):
     # Start timing encryption
     start = time.time()
 
-    # Encrypt the plaintext and generate authentication tag
+    # Encrypt the plaintext and generate an authentication tag
     ciphertext, tag = cipher.encrypt_and_digest(plaintext.encode())
 
     # End timing encryption

@@ -95,7 +95,7 @@ def aes_gcm_encrypt_decrypt(message: str):
 
 def chacha20_poly1305_encrypt_decrypt(message: str):
     key = get_random_bytes(32)
-    nonce = get_random_bytes(12)  # 96-bit
+    nonce = get_random_bytes(12)  # is 96 bit
 
     cipher = ChaCha20_Poly1305.new(key=key, nonce=nonce)
 

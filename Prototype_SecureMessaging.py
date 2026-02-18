@@ -4,7 +4,7 @@ import time
 
 
 
-# CORRECTNESS VALIDATION (TEST VECTORS)
+# CORRECTNESS VALIDATION (TEST VECTORS.)
 
 # AES (AESAVS)
 def validate_aes():

@@ -1,14 +1,14 @@
+from Crypto.Cipher import AES, ChaCha20, ChaCha20_Poly1305
+from Crypto.Random import get_random_bytes
 import time
 
-# Import cryptographic algorithms from PyCryptodome
-from Crypto.Cipher import AES, ChaCha20
-from Crypto.Random import get_random_bytes
+
 
 # CORRECTNESS VALIDATION (TEST VECTORS)
 
 # AES (AESAVS)
 def validate_aes():
-    print("Running AES validation test (AES")
+    print("Running AES validation test (AESAVS")
 
     key = bytes.fromhex("00000000000000000000000000000000")
     plaintext = bytes.fromhex("f34481ec3cc627bacd5dc3fb08f273e6")
@@ -25,7 +25,7 @@ def validate_aes():
         return False
 
 
-# ChaCha20
+# ChaCha20 (RFC 8439)
 
 def validate_chacha20():
     print("Running ChaCha20 test vector (RFC 8439)")
@@ -63,7 +63,7 @@ def run_validation_or_exit():
     ok_aes = validate_aes()
     ok_chacha = validate_chacha20()
     if not (ok_aes and ok_chacha):
-        raise SystemExit("ERROR: One or more validations failed.")
+        raise SystemExit("ERROR: One or more validations failed. Fix before proceeding.")
 
 
 # Run validation once when program starts
@@ -71,174 +71,70 @@ run_validation_or_exit()
 
 
 
+# 2) SECURE MESSAGING PROTOTYPE (AEAD)
+#  AES
+#  ChaCha20
 
-
-
-
-
-
-
-
-
-
-
-
-# AES ENCRYPTION FUNCTION
-
-def encrypt_aes(plaintext):
-    """
-    Encrypts a plaintext message using AES
-    and measures the encryption time.
-    """
-    # Generate a random 128-bit (16 byte) AES key
-    key = get_random_bytes(16)
-
-    # Create a new AES cipher object in GCM mode
+def aes_gcm_encrypt_decrypt(message: str):
+    key = get_random_bytes(16)              # AES-128
     cipher = AES.new(key, AES.MODE_GCM)
 
-    # Start timing encryption
-    start = time.time()
+    start_enc = time.time()
+    ciphertext, tag = cipher.encrypt_and_digest(message.encode())
+    end_enc = time.time()
 
-    # Encrypt the plaintext and generate authentication tag
-    ciphertext, tag = cipher.encrypt_and_digest(plaintext.encode())
+    nonce = cipher.nonce
 
-    # End timing encryption
-    end = time.time()
+    cipher_dec = AES.new(key, AES.MODE_GCM, nonce=nonce)
+    start_dec = time.time()
+    decrypted = cipher_dec.decrypt_and_verify(ciphertext, tag)
+    end_dec = time.time()
 
-    # Return all required values for decryption
-    return {
-        "ciphertext": ciphertext,
-        "tag": tag,
-        "nonce": cipher.nonce,
-        "key": key,
-        "time": end - start
-    }
+    return decrypted.decode(), end_enc - start_enc, end_dec - start_dec
 
 
-
-# AES DECRYPTION FUNCTION
-
-def decrypt_aes(data):
-    """
-    Decrypts AES ciphertext and verifies integrity
-    using the authentication tag.
-    """
-    # Recreate AES cipher using the same key and nonce
-    cipher = AES.new(data["key"], AES.MODE_GCM, nonce=data["nonce"])
-
-    # Start timing decryption
-    start = time.time()
-
-    # Decrypt and verify ciphertext
-    plaintext = cipher.decrypt_and_verify(data["ciphertext"], data["tag"])
-
-    # End timing decryption
-    end = time.time()
-
-    return plaintext.decode(), end - start
-
-
-
-# CHACHA20 ENCRYPTION FUNCTION
-
-def encrypt_chacha20(plaintext):
-    """
-    Encrypts a plaintext message using ChaCha20
-    and measures encryption time.
-    """
-    # Generate a random 256-bit (32-byte) key for ChaCha20
+def chacha20_poly1305_encrypt_decrypt(message: str):
     key = get_random_bytes(32)
+    nonce = get_random_bytes(12)  # 96-bit
 
-    # Create a new ChaCha20 cipher object
-    cipher = ChaCha20.new(key=key)
+    cipher = ChaCha20_Poly1305.new(key=key, nonce=nonce)
 
-    # Start timing encryption
-    start = time.time()
+    start_enc = time.time()
+    ciphertext, tag = cipher.encrypt_and_digest(message.encode())
+    end_enc = time.time()
 
-    # Encrypt the plaintext
-    ciphertext = cipher.encrypt(plaintext.encode())
+    cipher_dec = ChaCha20_Poly1305.new(key=key, nonce=nonce)
+    start_dec = time.time()
+    decrypted = cipher_dec.decrypt_and_verify(ciphertext, tag)
+    end_dec = time.time()
 
-    # End timing encryption
-    end = time.time()
-
-    # Return encryption data
-    return {
-        "ciphertext": ciphertext,
-        "nonce": cipher.nonce,
-        "key": key,
-        "time": end - start
-    }
+    return decrypted.decode(), end_enc - start_enc, end_dec - start_dec
 
 
+def main():
+    print("Secure Messaging Prototype (AEAD)")
+    message = input("Enter a message: ")
 
-# CHACHA20 DECRYPTION FUNCTION
+    print("\nChoose encryption method:")
+    print("1. AES")
+    print("2. ChaCha20")
+    choice = input("Enter choice: ").strip()
 
-def decrypt_chacha20(data):
-    """
-    Decrypts ChaCha20 ciphertext and measures
-    decryption time.
-    """
-    # Recreate ChaCha20 cipher using key and nonce
-    cipher = ChaCha20.new(key=data["key"], nonce=data["nonce"])
+    if choice == "1":
+        decrypted, enc_time, dec_time = aes_gcm_encrypt_decrypt(message)
+        print(f"\nDecrypted Message: {decrypted}")
+        print(f"AES Encryption Time: {enc_time:.6f} seconds")
+        print(f"AES Decryption Time: {dec_time:.6f} seconds")
 
-    # Start timing decryption
-    start = time.time()
+    elif choice == "2":
+        decrypted, enc_time, dec_time = chacha20_poly1305_encrypt_decrypt(message)
+        print(f"\nDecrypted Message: {decrypted}")
+        print(f"ChaCha20 Encryption Time: {enc_time:.6f} seconds")
+        print(f"ChaCha20 Decryption Time: {dec_time:.6f} seconds")
 
-    # Decrypt the ciphertext
-    plaintext = cipher.decrypt(data["ciphertext"])
-
-    # End timing decryption
-    end = time.time()
-
-    return plaintext.decode(), end - start
-
-
-
-print("Secure Messaging Prototype\n")
-
-# Ask user to input a message
-message = input("Enter your message: ")
-
-# Ask user to select encryption algorithm
-print("\nChoose algorithm:")
-print("1. AES")
-print("2. ChaCha20")
-choice = input("Enter 1 or 2: ")
-
-# If AES is selected
-if choice == "1":
-    print("\n--- AES Selected ---")
-
-    # Encrypts the message
-    encrypted = encrypt_aes(message)
-
-    # Decrypt the message
-    decrypted_text, dec_time = decrypt_aes(encrypted)
-
-    # Display results
-    print("\nCiphertext:", encrypted["ciphertext"])
-    print("Decrypted Text:", decrypted_text)
-    print(f"AES Encryption Time: {encrypted['time']:.6f} seconds")
-    print(f"AES Decryption Time: {dec_time:.6f} seconds")
-
-# If ChaCha20 is selected
-elif choice == "2":
-    print("\n--- ChaCha20 Selected ---")
-
-    # Encrypt the message
-    encrypted = encrypt_chacha20(message)
-
-    # Decrypt the message
-    decrypted_text, dec_time = decrypt_chacha20(encrypted)
-
-    # Display results
-    print("\nCiphertext:", encrypted["ciphertext"])
-    print("Decrypted Text:", decrypted_text)
-    print(f"ChaCha20 Encryption Time: {encrypted['time']:.6f} seconds")
-    print(f"ChaCha20 Decryption Time: {dec_time:.6f} seconds")
+    else:
+        print("Invalid choice.")
 
 
-# Handle invalid input
-else:
-    print("Invalid choice. Exiting.")
-
+if __name__ == "__main__":
+    main()

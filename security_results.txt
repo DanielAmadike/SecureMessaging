@@ -1,0 +1,18 @@
+SECURITY TEST RESULTS
+======================================================================
+
+Tests Performed:
+  1. Man-in-the-Middle (MITM) Attack Resistance
+  2. Key Strength Evaluation
+
+Results:
+  AES-GCM MITM Resistance: PASS
+  ChaCha20 MITM Resistance: PASS
+
+Key Strength Analysis:
+  - AES-128: 2^128 possible keys (3.4 × 10^38)
+  - AES-256: 2^256 possible keys (1.2 × 10^77)
+  - ChaCha20: 2^256 possible keys (1.2 × 10^77)
+  - Brute force time: Billions of years (infeasible)
+
+CONCLUSION: ALL TESTS PASSEDBoth algorithms provide strong security for secure messaging.

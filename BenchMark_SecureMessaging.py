@@ -16,7 +16,7 @@ Measures:
 
 Output:
   - Printed table
-  - Results.csv.
+  - Results.csv..
 """
 
 from Crypto.Cipher import AES, ChaCha20_Poly1305

@@ -1,6 +1,5 @@
 """
 SECURITY TESTING
-==============================================
 Quantified attack resistance with statistical analysis.
 
 Tests performed:
@@ -33,8 +32,6 @@ from Crypto.Random import get_random_bytes
 class NonceRegistry :
     """
     Maintains registry of used nonces to detect replay attacks.
-
-    This is what makes replay protection REAL, not conceptual.
     """
 
     def __init__(self) :
@@ -77,7 +74,6 @@ def test_mitm_statistical(algorithm_name, algorithm, iterations=1000) :
     """
     Statistical MITM attack testing.
 
-    Quantifies:
     - How many decryption attempts
     - False Accept Rate (FAR)
     - Success rate of eavesdropping
@@ -279,7 +275,6 @@ def test_impersonation_statistical(algorithm_name, iterations=500) :
     """
     Statistical impersonation/forgery testing.
 
-    Quantifies:
     - How many forgery attempts
     - Signature verification success rate
     - False Accept Rate for forged signatures
@@ -297,8 +292,8 @@ def test_impersonation_statistical(algorithm_name, iterations=500) :
     alice_private, alice_public = KeyManager.generate_keypair()
 
     print(f"\n[ATTACK] Attempting {iterations} signature forgery attacks...")
-    successful_forgeries = 0  # Forged signature accepted (BAD!)
-    detected_forgeries = 0  # Forgery detected (GOOD!)
+    successful_forgeries = 0  # Forged signature accepted (BAD)
+    detected_forgeries = 0  # Forgery detected (GOOD)
 
     for i in range(iterations) :
         # Attacker creates fake message
@@ -363,8 +358,6 @@ def test_impersonation_statistical(algorithm_name, iterations=500) :
 def test_replay_with_nonce_tracking(algorithm_name, algorithm, iterations=500) :
     """
     Replay attack testing with ACTUAL nonce registry.
-
-    This is what makes it "research-level" - real implementation.
     """
     print(f"\n{'=' * 70}")
     print(f"TEST 4: REPLAY ATTACK - NONCE REGISTRY IMPLEMENTATION")
@@ -597,18 +590,18 @@ def run_statistical_security_tests() :
     print("=" * 70)
 
     print("\nThis provides quantified, statistical security analysis:")
-    print("  ✓ How many times tested")
-    print("  ✓ False Accept Rate (FAR)")
-    print("  ✓ Percentage of attacks rejected")
-    print("  ✓ Statistical confidence (95% CI)")
-    print("  ✓ Detection latency measurement")
-    print("  ✓ Nonce registry implementation")
+    print("   How many times tested")
+    print("   False Accept Rate (FAR)")
+    print("   Percentage of attacks rejected")
+    print("   Statistical confidence (95% CI)")
+    print("   Detection latency measurement")
+    print("   Nonce registry implementation")
 
-    input("\n\nPress Enter to begin statistical testing...")
+    input("\n\nPress Enter to begin testing...")
 
     all_results = {}
 
-    # Test 1: MITM - Statistical
+    # Test 1: MITM
     print( "STATISTICAL TEST 1: MITM")
 
 
@@ -760,11 +753,11 @@ def run_statistical_security_tests() :
         if all_passed :
             f.write("CONCLUSION: ALL TESTS PASSED \n\n")
             f.write("Formal Security Properties (Quantified):\n")
-            f.write("  • Confidentiality: FAR = 0.00% (perfect)\n")
-            f.write("  • Integrity: 100.00% tamper detection\n")
-            f.write("  • Authentication: FAR = 0.00% (perfect)\n")
-            f.write("  • Freshness: 100.00% replay detection\n")
-            f.write("  • Resilience: < 1ms detection latency\n\n")
+            f.write("  . Confidentiality: FAR = 0.00% (perfect)\n")
+            f.write("  . Integrity: 100.00% tamper detection\n")
+            f.write("  . Authentication: FAR = 0.00% (perfect)\n")
+            f.write("  . Freshness: 100.00% replay detection\n")
+            f.write("  . Resilience: < 1ms detection latency\n\n")
             f.write("This is RESEARCH-LEVEL security validation.\n")
         else :
             f.write("SOME TESTS FAILED ✗\n")

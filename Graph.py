@@ -1,12 +1,12 @@
 """
-Performance Graphs
+Performance Graphs Generator
 Creates visual comparison charts from benchmark results.
 
 Requirements:
   pip install matplotlib --break-system-packages
 
-Input:  Results.csv (from benchmark result)
-Output: PNG image
+Input:  Results.csv (from benchmark script)
+Output: PNG image files
 """
 
 import csv
@@ -18,7 +18,7 @@ def read_results(filename="Results.csv") :
     """Reads results from CSV file"""
     if not os.path.exists(filename) :
         print(f"ERROR: {filename} not found!")
-        print(f"Please run final_benchmark_with_far.py first to create {filename}")
+        print(f"Please run BenchMark_SecureMessaging.py first to create {filename}")
         return None
 
     aes_data = []
@@ -38,8 +38,9 @@ def read_results(filename="Results.csv") :
 def create_encryption_time_chart(aes_data, chacha_data) :
     """Creates bar chart comparing encryption times"""
     test_cases = [row['Test Case'] for row in aes_data]
-    aes_times = [float(row['Enc Time (ms)']) for row in aes_data]
-    chacha_times = [float(row['Enc Time (ms)']) for row in chacha_data]
+    # FIXED: Changed from 'Enc Time (ms)' to 'Enc Mean (ms)'
+    aes_times = [float(row['Enc Mean (ms)']) for row in aes_data]
+    chacha_times = [float(row['Enc Mean (ms)']) for row in chacha_data]
 
     fig, ax = plt.subplots(figsize=(10, 6))
 
@@ -87,7 +88,7 @@ def create_throughput_chart(aes_data, chacha_data) :
 
     plt.tight_layout()
     plt.savefig('graph_throughput.png', dpi=300, bbox_inches='tight')
-    print("✓ Created: graph_throughput.png")
+    print(" Created: graph_throughput.png")
     plt.close()
 
 
@@ -119,18 +120,19 @@ def create_safety_chart(aes_data, chacha_data) :
 
     plt.tight_layout()
     plt.savefig('graph_safety.png', dpi=300, bbox_inches='tight')
-    print("✓ Created: graph_safety.png")
+    print(" Created: graph_safety.png")
     plt.close()
 
 
 def create_comparison_summary(aes_data, chacha_data) :
     """Creates summary comparison chart"""
-    # Calculate averages
-    aes_avg_enc = sum(float(row['Enc Time (ms)']) for row in aes_data) / len(aes_data)
-    chacha_avg_enc = sum(float(row['Enc Time (ms)']) for row in chacha_data) / len(chacha_data)
+    # FIXED: Changed from 'Enc Time (ms)' to 'Enc Mean (ms)'
+    aes_avg_enc = sum(float(row['Enc Mean (ms)']) for row in aes_data) / len(aes_data)
+    chacha_avg_enc = sum(float(row['Enc Mean (ms)']) for row in chacha_data) / len(chacha_data)
 
-    aes_avg_dec = sum(float(row['Dec Time (ms)']) for row in aes_data) / len(aes_data)
-    chacha_avg_dec = sum(float(row['Dec Time (ms)']) for row in chacha_data) / len(chacha_data)
+    # FIXED: Changed from 'Dec Time (ms)' to 'Dec Mean (ms)'
+    aes_avg_dec = sum(float(row['Dec Mean (ms)']) for row in aes_data) / len(aes_data)
+    chacha_avg_dec = sum(float(row['Dec Mean (ms)']) for row in chacha_data) / len(chacha_data)
 
     aes_avg_throughput = sum(float(row['Throughput (MB/s)']) for row in aes_data) / len(aes_data)
     chacha_avg_throughput = sum(float(row['Throughput (MB/s)']) for row in chacha_data) / len(chacha_data)
@@ -162,19 +164,19 @@ def create_comparison_summary(aes_data, chacha_data) :
 
     plt.tight_layout()
     plt.savefig('graph_summary.png', dpi=300, bbox_inches='tight')
-    print("Created: graph_summary.png")
+    print(" Created: graph_summary.png")
     plt.close()
 
 
 def main() :
-    print("=" * 50)
-    print(" " * 15 + "PERFORMANCE GRAPHS GENERATOR")
-    print("=" * 50)
+    print("=" * 60)
+    print(" " * 15 + "PERFORMANCE GRAPHS")
+    print("=" * 60)
 
     # Check if matplotlib is installed
     try :
         import matplotlib
-        print("\n✓ matplotlib is installed")
+        print("\n matplotlib is installed")
     except ImportError :
         print("\n✗ ERROR: matplotlib is not installed!")
         print("\nPlease install it:")
@@ -189,7 +191,7 @@ def main() :
         return
 
     aes_data, chacha_data = data
-    print(f"✓ Found {len(aes_data)} AES tests and {len(chacha_data)} ChaCha20 tests")
+    print(f" Found {len(aes_data)} AES tests and {len(chacha_data)} ChaCha20 tests")
 
     # Create graphs
     print("\nGenerating graphs...")
@@ -200,7 +202,7 @@ def main() :
     create_safety_chart(aes_data, chacha_data)
     create_comparison_summary(aes_data, chacha_data)
 
-    print("-" * 50)
+    print("-" * 60)
     print("\n All graphs created successfully!")
     print("\nGenerated files:")
     print("  • graph_encryption_time.png - Encryption speed comparison")
@@ -208,13 +210,15 @@ def main() :
     print("  • graph_safety.png          - Safety test results")
     print("  • graph_summary.png         - Overall summary")
 
-    print("\nInstructions:")
-    print("  1. Open these PNG files")
-    print("  3. Add figure captions:")
-    print("     Figure X: Encryption Speed Comparison")
-    print("     Figure Y: Throughput Comparison")
+    print("\n:")
+    print(" (Results used in Report)")
+    print("  Add figure captions:")
+    print("    Figure 6.1: Encryption Speed Comparison")
+    print("    Figure 6.2: Throughput Comparison")
+    print("    Figure 6.3: Safety Test Results")
+    print("    Figure 6.4: Overall Performance Summary")
 
-    print("\n" + "=" * 50)
+    print("\n" + "=" * 60)
 
 
 if __name__ == "__main__" :

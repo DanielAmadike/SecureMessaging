@@ -136,14 +136,14 @@ def test_key_strength() :
     print(f"\n[3] Security Comparison:")
     print(f"{'─' * 70}")
     print(f"  • AES-128: Secure for next 30+ years (NIST approved)")
-    print(f"  • AES-256: Post-quantum secure (even against quantum computers)")
+    print(f"  • AES-256: Post-quantum secure ")
     print(f"  • ChaCha20: Post-quantum secure (256-bit key)")
     print(f"  • Both algorithms: Approved for classified information")
 
     print(f"\n[4] Practical Security:")
     print(f"{'─' * 70}")
     print(f"  • Used by: WhatsApp, Signal, TLS/HTTPS, VPNs")
-    print(f"  • Conclusion: Both algorithms computationally impossible to break")
+    print(f"  • Conclusion: Both algorithms impossible to break")
 
     print(f"{'=' * 70}")
 

@@ -1,11 +1,10 @@
 """
-Complete Secure Messaging System - FINAL VERSION
-=================================================
+Secure Messaging System
 Full two-way messaging with test vector validation.
 
 Features:
   1. NIST/RFC Test Vector Validation (proves correctness)
-  2. Two-way messaging (Alice ↔ Bob)
+  2. Two-way messaging (Alice <-> Bob)
   3. Key Exchange
   4. Message Encryption/Decryption
   5. Digital Signatures (sender authentication)
@@ -251,7 +250,6 @@ class MessagingUser :
     """
     Complete messaging user - can SEND and RECEIVE messages.
     """
-
     # Shared database and public key registry
     database = MessageDatabase()
     public_keys = {}  # username -> public_key mapping
@@ -273,13 +271,13 @@ class MessagingUser :
         """
         key = KeyManager.derive_key_from_password(password, algorithm)
         self.shared_keys[other_user] = {'key' : key, 'algorithm' : algorithm}
-        print(f"  ✓ {self.username} established shared key with {other_user} ({algorithm})")
+        print(f"   {self.username} established shared key with {other_user} ({algorithm})")
         return key
 
     def send_message(self, receiver: str, plaintext: str) :
         """
         Sends encrypted message to receiver.
-        Complete workflow: encrypt → sign → store
+        Complete workflow: encrypt -> sign -> store
         """
         # Check shared key exists
         if receiver not in self.shared_keys :
@@ -452,7 +450,7 @@ def demo_two_way_messaging() :
 
     # Bob sends reply to Alice
     print("\n[6] Bob sends reply to Alice...")
-    bob.send_message("Alice", "Sounds good! See you at 3pm.")
+    bob.send_message("Alice", "Sounds good! See you at 3pm in Richmond.")
 
     # Alice checks messages
     print("\n[7] Alice checks her messages...")
@@ -483,8 +481,8 @@ def demo_two_way_messaging() :
     print("=" * 70)
     print("\nDemonstrated:")
     print("   NIST/RFC test vector validation")
-    print("   Alice → Bob messaging")
-    print("   Bob → Alice messaging (reply)")
+    print("   Alice -> Bob messaging")
+    print("   Bob -> Alice messaging (reply)")
     print("   Multiple messages in both directions")
     print("   Encryption with ChaCha20-Poly1305")
     print("   Digital signature verification")
@@ -538,7 +536,7 @@ def interactive_mode() :
     user2.establish_shared_key(user1_name, password, algorithm)
 
     print("\n" + "=" * 70)
-    print("✓ SECURE CHANNEL ESTABLISHED")
+    print(" SECURE CHANNEL ESTABLISHED")
     print("=" * 70)
     print(f"  Encryption: {algorithm}")
     print(f"  Key Length: {'128-bit' if algorithm == 'AES' else '256-bit'}")
@@ -587,7 +585,7 @@ def interactive_mode() :
             # Switch users
             current_user, other_user = other_user, current_user
             current_name, other_name = other_name, current_name
-            print(f"\n✓ Switched to {current_name}")
+            print(f"\n Switched to {current_name}")
 
         elif choice == "5" :
             print("\nExiting. Goodbye!")

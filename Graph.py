@@ -59,7 +59,7 @@ def create_encryption_time_chart(aes_data, chacha_data) :
 
     plt.tight_layout()
     plt.savefig('graph_encryption_time.png', dpi=300, bbox_inches='tight')
-    print("✓ Created: graph_encryption_time.png")
+    print(" Created: graph_encryption_time.png")
     plt.close()
 
 

@@ -79,7 +79,7 @@ def test_mitm_statistical(algorithm_name, algorithm, iterations=1000) :
     - Success rate of eavesdropping
     """
     print(f"\n{'=' * 70}")
-    print(f"TEST 1: MITM ATTACK - STATISTICAL ANALYSIS")
+    print(f"TEST 1: MITM ATTACK")
     print(f"Algorithm: {algorithm_name}")
     print(f"{'=' * 70}")
 
@@ -163,7 +163,7 @@ def test_tampering_statistical(algorithm_name, algorithm, iterations=1000) :
     """
     Statistical tampering attack testing.
 
-    Quantifies:
+    It Quantifies:
     - How many tamper attempts
     - What percentage rejected
     - False Accept Rate for tampered messages
@@ -180,7 +180,7 @@ def test_tampering_statistical(algorithm_name, algorithm, iterations=1000) :
 
     # Setup
     key = KeyManager.derive_key_from_password("shared_secret", algorithm)
-    message = "Approved: Payment of $100"
+    message = "Approved: Payment of $1000"
 
     print(f"\n[ENCRYPTION] Encrypting message...")
     encrypted = encrypt_message(message, key, algorithm)
@@ -699,7 +699,6 @@ def run_statistical_security_tests() :
     with open("statistical_security_results.txt", "w") as f :
         f.write("STATISTICAL SECURITY TEST RESULTS - RESEARCH LEVEL\n")
         f.write("=" * 70 + "\n\n")
-        f.write("This addresses teacher feedback:\n")
         f.write("   How many times tested\n")
         f.write("   False Accept Rate (FAR)\n")
         f.write("   Percentage of attacks rejected\n")
@@ -763,7 +762,6 @@ def run_statistical_security_tests() :
             f.write("SOME TESTS FAILED ✗\n")
 
     print("\n Detailed results saved to 'statistical_security_results.txt'")
-    print("\nThis statistical analysis addresses ALL teacher feedback:")
     print("   Quantified attack resistance")
     print("   False Accept Rate calculations")
     print("   Statistical confidence measures")
@@ -773,7 +771,7 @@ def run_statistical_security_tests() :
 
 
 
-# ENTRY POINT
+# ENTRY POINT.
 
 
 if __name__ == "__main__" :
@@ -781,7 +779,6 @@ if __name__ == "__main__" :
     print("STATISTICAL SECURITY TESTING")
     print("=" * 70)
     print("\nResearch-level security validation with quantified metrics.")
-    print("\nThis addresses teacher feedback for first-class/distinction:")
     print("  . How many times tested? -> 500-1000 iterations per test")
     print("  . False Accept Rate? -> Calculated for each attack")
     print("  . Detection percentage? -> Quantified statistically")

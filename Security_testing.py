@@ -5,7 +5,6 @@ Tests AES-GCM and ChaCha20-Poly1305 against attacks.
 Tests performed:
   1. Man-in-the-Middle (MITM) Attack
   2. Key Strength Evaluation
-
 Output: Console display + security_results.txt
 """
 
@@ -91,12 +90,10 @@ def test_mitm_attack(algorithm_name, encrypt_fn, decrypt_fn) :
     print(f"RESULT: MITM ATTACK BLOCKED")
     print(f"Encryption prevents unauthorized parties from reading messages.")
     print(f"{'=' * 70}")
-
     return "PASS"
 
 
 # TEST 2: KEY STRENGTH EVALUATION
-
 
 def test_key_strength() :
     """
@@ -200,7 +197,6 @@ def run_all_security_tests() :
         print("\nConclusion: Both algorithms provide strong security for messaging.")
     else :
         print("SOME SECURITY TESTS FAILED")
-
     print("=" * 70)
 
     # Save results to file
@@ -229,8 +225,6 @@ def run_all_security_tests() :
 
 
 # ENTRY POINT
-
-
 if __name__ == "__main__" :
     print("\n SECURITY ANALYSIS:")
     print("This script demonstrates security features of AES-GCM and ChaCha20-Poly1305.")

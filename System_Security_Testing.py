@@ -767,7 +767,6 @@ def run_statistical_security_tests() :
     print("   Statistical confidence measures")
     print("   Nonce registry implementation")
     print("   Detection latency measurement")
-    print("\n READY FOR DISTINCTION GRADE!")
 
 
 
@@ -778,7 +777,7 @@ if __name__ == "__main__" :
     print("\n" + "=" * 70)
     print("STATISTICAL SECURITY TESTING")
     print("=" * 70)
-    print("\nResearch-level security validation with quantified metrics.")
+    print("\nSecurity validation with quantified metrics.")
     print("  . How many times tested? -> 500-1000 iterations per test")
     print("  . False Accept Rate? -> Calculated for each attack")
     print("  . Detection percentage? -> Quantified statistically")

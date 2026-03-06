@@ -95,17 +95,38 @@ def deterministic_bytes(label: str, n: int) -> bytes :
 
 def build_expanded_dataset() -> List[Tuple[str, bytes]] :
     """
-    Expanded dataset
-    - Original was 64B, 256B, 1KB, 10KB
-    - Added: 50KB, 100KB for scalability analysis
+    Comprehensive mobile-optimized dataset - 15 test cases
+
+    Coverage:
+    - Tiny (16B-512B): Mobile messaging focus - 6 cases
+    - Small (1KB-5KB): Longer Chat - 3 cases
+    - Medium (10KB-50KB): Images & attachments - 3 cases
+    - Large (100KB-500KB): Documents & files - 3 cases
+
     """
     return [
-        ("Test 1 - 64 bytes", deterministic_bytes("test1", 64)),
-        ("Test 2 - 256 bytes", deterministic_bytes("test2", 256)),
-        ("Test 3 - 1 KB", deterministic_bytes("test3", 1024)),
-        ("Test 4 - 10 KB", deterministic_bytes("test4", 10 * 1024)),
-        ("Test 5 - 50 KB", deterministic_bytes("test5", 50 * 1024)),  # NEW
-        ("Test 6 - 100 KB", deterministic_bytes("test6", 100 * 1024)),  # NEW
+        # TINY - Mobile messaging (The primary focus)
+        ("Test 1 - 16B", deterministic_bytes("test1", 16)),
+        ("Test 2 - 32B", deterministic_bytes("test2", 32)),
+        ("Test 3 - 64B", deterministic_bytes("test3", 64)),
+        ("Test 4 - 128B", deterministic_bytes("test4", 128)),
+        ("Test 5 - 256B", deterministic_bytes("test5", 256)),
+        ("Test 6 - 512B", deterministic_bytes("test6", 512)),
+
+        # SMALL - Chat history & small files
+        ("Test 7 - 1 KB", deterministic_bytes("test7", 1024)),
+        ("Test 8 - 2 KB", deterministic_bytes("test8", 2 * 1024)),
+        ("Test 9 - 5 KB", deterministic_bytes("test9", 5 * 1024)),
+
+        # MEDIUM - Images & attachments
+        ("Test 10 - 10 KB", deterministic_bytes("test10", 10 * 1024)),
+        ("Test 11 - 25 KB", deterministic_bytes("test11", 25 * 1024)),
+        ("Test 12 - 50 KB", deterministic_bytes("test12", 50 * 1024)),
+
+        # LARGE - Documents & large files
+        ("Test 13 - 100 KB", deterministic_bytes("test13", 100 * 1024)),
+        ("Test 14 - 250 KB", deterministic_bytes("test14", 250 * 1024)),
+        ("Test 15 - 500 KB", deterministic_bytes("test15", 500 * 1024)),
     ]
 
 
@@ -322,8 +343,6 @@ def run_benchmark() :
 
 if __name__ == "__main__" :
     run_benchmark()
-
-
 
 
 

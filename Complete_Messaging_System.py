@@ -248,7 +248,7 @@ class MessageDatabase :
 
 class MessagingUser :
     """
-    Complete messaging user - can SEND and RECEIVE messages.
+    Complete messaging user interface - can SEND and RECEIVE messages.
     """
     # Shared database and public key registry
     database = MessageDatabase()
@@ -598,7 +598,7 @@ def interactive_mode() :
 
 if __name__ == "__main__" :
     print("=" * 70)
-    print("COMPLETE SECURE MESSAGING SYSTEM - FINAL")
+    print("MESSAGING SYSTEM ")
 
 
     print("\nFeatures:")

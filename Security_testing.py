@@ -115,7 +115,7 @@ def test_key_strength() :
     print(f"{'ChaCha20':<20} {'256 bits':<15} {'2^256 (1.2 × 10^77)':<25} {'Very Secure'}")
 
     print(f"\n[2] Brute Force Attack Analysis:")
-    print(f"    Assume attacker can test 1 TRILLION keys per second")
+    print(f"    Assume attacker can test TRILLIONS keys per second")
     print(f"    (Faster than any existing computer)")
 
     # AES-128
@@ -143,7 +143,8 @@ def test_key_strength() :
     print(f"\n[4] Practical Security:")
     print(f"{'─' * 70}")
     print(f"  • Used by: WhatsApp, Signal, TLS/HTTPS, VPNs")
-    print(f"  • Conclusion: Both algorithms impossible to break")
+    print(f"  • Conclusion: Both algorithms"
+          f" impossible to break")
 
     print(f"{'=' * 70}")
 
@@ -217,7 +218,7 @@ def run_all_security_tests() :
         f.write("  - AES-128: 2^128 possible keys (3.4 × 10^38)\n")
         f.write("  - AES-256: 2^256 possible keys (1.2 × 10^77)\n")
         f.write("  - ChaCha20: 2^256 possible keys (1.2 × 10^77)\n")
-        f.write("  - Brute force time: Billions of years (infeasible)\n\n")
+        f.write("  - Brute force time: Billions of years (impossible)\n\n")
         if all_passed :
             f.write("CONCLUSION: ALL TESTS PASSED")
             f.write("Both algorithms provide strong security for secure messaging.\n")

@@ -315,7 +315,7 @@ class MessagingUser :
         # Save to database
         MessagingUser.database.save_message(message)
 
-        print(f"  ✓ Message encrypted and sent to {receiver}")
+        print(f"   Message encrypted and sent to {receiver}")
         print(f"    Algorithm: {algorithm}")
         print(f"    Authenticated: Yes (RSA signature)")
         return message

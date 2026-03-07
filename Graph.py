@@ -123,6 +123,35 @@ def create_safety_chart(aes_data, chacha_data) :
     print(" Created: graph_safety.png")
     plt.close()
 
+def create_scaling_line_graph(aes_data, chacha_data):
+    """Creates line graph showing encryption scaling behaviour"""
+
+    sizes = [row['Test Case'] for row in aes_data]
+    aes_times = [float(row['Enc Mean (ms)']) for row in aes_data]
+    chacha_times = [float(row['Enc Mean (ms)']) for row in chacha_data]
+
+    fig, ax = plt.subplots(figsize=(10,6))
+
+    ax.plot(sizes, aes_times, marker='o', label='AES-GCM', linewidth=2)
+    ax.plot(sizes, chacha_times, marker='o', label='ChaCha20-Poly1305', linewidth=2)
+
+    ax.set_xlabel("Message Size")
+    ax.set_ylabel("Encryption Time (ms)")
+    ax.set_title("Encryption Scaling Behaviour: AES-GCM vs ChaCha20-Poly1305")
+
+    ax.legend()
+    ax.grid(True)
+    # ax.set_xscale('log')
+
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+
+    plt.savefig("graph_scaling.png", dpi=300)
+    print("Created: graph_scaling.png")
+
+    plt.close()
+
+
 
 def create_comparison_summary(aes_data, chacha_data) :
     """Creates summary comparison chart"""
@@ -201,6 +230,7 @@ def main() :
     create_throughput_chart(aes_data, chacha_data)
     create_safety_chart(aes_data, chacha_data)
     create_comparison_summary(aes_data, chacha_data)
+    create_scaling_line_graph(aes_data, chacha_data)
 
     print("-" * 60)
     print("\n All graphs created successfully!")
@@ -209,9 +239,10 @@ def main() :
     print("  • graph_throughput.png      - Throughput comparison")
     print("  • graph_safety.png          - Safety test results")
     print("  • graph_summary.png         - Overall summary")
+    print("  • graph_scaling_line.png         - ")
 
     print("\n:")
-    print(" (Results used in Report)")
+    print(" (This Results is created used in the Report)")
     print("  Add figure captions:")
     print("    Figure 6.1: Encryption Speed Comparison")
     print("    Figure 6.2: Throughput Comparison")

@@ -13,6 +13,6 @@ Key Strength Analysis:
   - AES-128: 2^128 possible keys (3.4 × 10^38)
   - AES-256: 2^256 possible keys (1.2 × 10^77)
   - ChaCha20: 2^256 possible keys (1.2 × 10^77)
-  - Brute force time: Billions of years (infeasible)
+  - Brute force time: Billions of years (impossible)
 
 CONCLUSION: ALL TESTS PASSEDBoth algorithms provide strong security for secure messaging.

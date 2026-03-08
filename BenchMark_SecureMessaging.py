@@ -1,8 +1,10 @@
 """
-Secure Messaging
-1. Uses NIST test vectors (stated dataset)
+Secure Messaging BenchMark
+This Script test the performance
+1. Uses NIST test vectors
 2. Tests multiple cases automatically
-3. Measures Speed, Safety, Error for each test
+3. Measures Speed, Safety for each test
+Average mean, Standard Deviation and Confidence interval 95%
 4. Outputs results in table format
 5. Tests both AES and ChaCha20
 
@@ -105,7 +107,7 @@ def build_expanded_dataset() -> List[Tuple[str, bytes]] :
 
     """
     return [
-        # TINY - Mobile messaging (The primary focus)
+        #  Mobile messaging
         ("Test 1 - 16B", deterministic_bytes("test1", 16)),
         ("Test 2 - 32B", deterministic_bytes("test2", 32)),
         ("Test 3 - 64B", deterministic_bytes("test3", 64)),
@@ -113,12 +115,12 @@ def build_expanded_dataset() -> List[Tuple[str, bytes]] :
         ("Test 5 - 256B", deterministic_bytes("test5", 256)),
         ("Test 6 - 512B", deterministic_bytes("test6", 512)),
 
-        # SMALL - Chat history & small files
+        # SMALL - small files
         ("Test 7 - 1 KB", deterministic_bytes("test7", 1024)),
         ("Test 8 - 2 KB", deterministic_bytes("test8", 2 * 1024)),
         ("Test 9 - 5 KB", deterministic_bytes("test9", 5 * 1024)),
 
-        # MEDIUM - Images & attachments
+        # MEDIUM - Images & attachments sizes
         ("Test 10 - 10 KB", deterministic_bytes("test10", 10 * 1024)),
         ("Test 11 - 25 KB", deterministic_bytes("test11", 25 * 1024)),
         ("Test 12 - 50 KB", deterministic_bytes("test12", 50 * 1024)),
@@ -343,7 +345,4 @@ def run_benchmark() :
 
 if __name__ == "__main__" :
     run_benchmark()
-
-
-
 

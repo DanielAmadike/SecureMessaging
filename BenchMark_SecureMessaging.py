@@ -321,9 +321,9 @@ def run_benchmark() :
         print()
 
     # Display results
-    print("=" * 50)
+    print("-" * 50)
     print("RESULTS - Statistical Analysis")
-    print("=" * 50)
+    print("-" * 50)
     print(f"{'Algorithm':<25} {'Test':<20} {'Enc Mean±CI (ms)':<20} {'FAR %':<8}")
     print("-" * 50)
 
@@ -332,7 +332,7 @@ def run_benchmark() :
         print(f"{row['Algorithm']:<25} {row['Test Case']:<20} {enc_display:<20} {row['FAR (%)']:<8}")
 
     # Save to CSV
-    print("\n" + "=" * 50)
+    print("\n" + "-" * 50)
     with open("Results.csv", "w", newline="") as f :
         writer = csv.DictWriter(f, fieldnames=rows[0].keys())
         writer.writeheader()
@@ -340,7 +340,7 @@ def run_benchmark() :
 
     print(" Results saved to 'Results.csv'")
     print("  Contains: Mean, StdDev, 95% CI")
-    print("=" * 50)
+    print("-" * 50)
 
 
 if __name__ == "__main__" :

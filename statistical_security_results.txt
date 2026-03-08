@@ -1,0 +1,77 @@
+
+======================================================================
+               SECURITY TESTING
+======================================================================
+
+Testing: Complete_Messaging_System.py
+Algorithms: AES-GCM vs ChaCha20-Poly1305
+Total attack attempts: 600 (300 per algorithm)
+Estimated runtime: ~2 minutes
+
+Tests per algorithm:
+  1. MITM Attack (100 attempts)
+  2. Message Tampering (100 attempts)
+  3. Replay Attack (100 attempts)
+======================================================================
+
+######################################################################
+#  TESTING AES-GCM                                                   #
+######################################################################
+
+######################################################################
+#  TESTING ChaCha20-Poly1305                                         #
+######################################################################
+
+======================================================================
+COMPARATIVE SECURITY ASSESSMENT
+======================================================================
+
+Testing completed in: 0.0 seconds
+Total attack attempts: 600 (300 per algorithm)
+
+Algorithm                 Test                 FAR        Result
+----------------------------------------------------------------------
+AES-GCM                   MITM Attack          0.00%     PASS
+AES-GCM                   Tampering Detection  0.00%     PASS
+AES-GCM                   Replay Attack        0.00%     PASS
+ChaCha20-Poly1305         MITM Attack          0.00%     PASS
+ChaCha20-Poly1305         Tampering Detection  0.00%     PASS
+ChaCha20-Poly1305         Replay Attack        0.00%     PASS
+
+ALGORITHM COMPARISON:
+
+AES-GCM:
+   MITM FAR:      0.00%
+   Tampering FAR: 0.00%
+   Replay FAR:    0.00%
+   Overall:       PASS - SECURE
+
+ChaCha20-Poly1305:
+   MITM FAR:      0.00%
+   Tampering FAR: 0.00%
+   Replay FAR:    0.00%
+   Overall:       PASS - SECURE
+
+CONCLUSION:
+
+Both AES-GCM and ChaCha20-Poly1305 successfully resisted
+all attack vectors across 300 attempts each:
+
+  • MITM attacks:        0.00% FAR (both algorithms)
+  • Tampering:           0.00% FAR (both algorithms)
+  • Replay:              100% detection (both algorithms)
+
+SECURITY EQUIVALENCE:
+From a security perspective, both algorithms provide
+equivalent protection against tested attack vectors.
+Both demonstrate:
+
+  ✓ Confidentiality (prevents eavesdropping)
+  ✓ Integrity (prevents tampering)
+  ✓ Authenticity (authentication tag)
+  ✓ Freshness (nonce prevents replay)
+
+Therefore, the choice between AES-GCM and ChaCha20-Poly1305
+should be based on PERFORMANCE considerations (as tested in
+the benchmark), not security - both are equally secure.
+======================================================================

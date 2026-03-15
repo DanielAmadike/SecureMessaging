@@ -342,8 +342,8 @@ def run_benchmark() :
     for test_name, msg in dataset :
         print(f"Running: {test_name}")
 
-        # AES-GCM
-        print("  Testing AES-GCM...")
+        # AES
+        print("  Testing AES...")
         aes_stats = measure_with_statistics(aes_encrypt, aes_decrypt, msg)
         aes_safety, aes_far = test_safety_and_far(aes_encrypt, aes_decrypt, msg)
 
@@ -354,7 +354,7 @@ def run_benchmark() :
 
         # Store AES results
         rows.append({
-            'Algorithm' : 'AES-GCM',
+            'Algorithm' : 'AES',
             'Test Case' : test_name,
             'Message Size (B)' : len(msg),
             'Enc Mean (ms)' : round(aes_stats['enc_mean'], 6),
@@ -397,7 +397,7 @@ def run_benchmark() :
 
     print("RESULTS:")
     print("-" * 70)
-    print(f"\nAES-GCM:")
+    print(f"\nAES:")
     print(f"  Mean:              {aes_avalanche['mean']:.2f}%")
     print(f"  Std Deviation:     {aes_avalanche['stdev']:.2f}%")
     print(f"  95% Confidence:    ±{aes_avalanche['ci']:.2f}%")
@@ -454,11 +454,11 @@ def run_benchmark() :
     # Display comparison
     print("OVERALL ENERGY EFFICIENCY:")
     print("-" * 70)
-    print(f"\n{'Metric':<30} {'AES-GCM':<15} {'ChaCha20':<15} {'Winner':<10}")
+    print(f"\n{'Metric':<30} {'AES':<15} {'ChaCha20':<15} {'Winner':<10}")
     print("-" * 70)
 
     # CPU Time (lower is better)
-    cpu_winner = 'ChaCha20' if chacha_avg_cpu < aes_avg_cpu else 'AES-GCM'
+    cpu_winner = 'ChaCha20' if chacha_avg_cpu < aes_avg_cpu else 'AES'
     cpu_diff = abs(((aes_avg_cpu - chacha_avg_cpu) / min(aes_avg_cpu, chacha_avg_cpu)) * 100)
     print(f"{'Avg CPU Time (ms)':<30} {aes_avg_cpu:<15.4f} {chacha_avg_cpu:<15.4f} {cpu_winner:<10}")
     print(f"{'  (Lower = Better)':<30} {'Diff: ' + str(round(cpu_diff, 2)) + '%':>30}")

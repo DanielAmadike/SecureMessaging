@@ -1,22 +1,23 @@
 """
-Performance Graphs Generator
-Creates visual comparison charts from benchmark results.
+UPDATED Performance Graphs Generator - WITH ENERGY METRICS
+Creates visual comparison charts from benchmark results including energy efficiency.
 
 Requirements:
   pip install matplotlib --break-system-packages
 
-Input:  Results.csv (from benchmark script)
-Output: PNG image files
+Input:  Results.csv (from BenchMark_SecureMessaging.py)
+Output: PNG image files (8 graphs total)
 """
 
 import csv
 import matplotlib.pyplot as plt
+import numpy as np
 import os
 
 
-def read_results(filename="Results.csv") :
+def read_results(filename="Results.csv"):
     """Reads results from CSV file"""
-    if not os.path.exists(filename) :
+    if not os.path.exists(filename):
         print(f"ERROR: {filename} not found!")
         print(f"Please run BenchMark_SecureMessaging.py first to create {filename}")
         return None
@@ -24,233 +25,342 @@ def read_results(filename="Results.csv") :
     aes_data = []
     chacha_data = []
 
-    with open(filename, 'r') as f :
+    with open(filename, 'r') as f:
         reader = csv.DictReader(f)
-        for row in reader :
-            if row['Algorithm'] == 'AES-GCM' :
+        for row in reader:
+            if row['Algorithm'] == 'AES-GCM':
                 aes_data.append(row)
-            else :
+            else:
                 chacha_data.append(row)
+
+    print(f" Loaded {len(aes_data)} AES-GCM results")
+    print(f" Loaded {len(chacha_data)} ChaCha20 results")
 
     return aes_data, chacha_data
 
 
-def create_encryption_time_chart(aes_data, chacha_data) :
-    """Creates bar chart comparing encryption times"""
+# ========== GRAPH 1: ENCRYPTION TIME ==========
+def create_encryption_time_chart(aes_data, chacha_data):
+    """Bar chart comparing encryption times"""
     test_cases = [row['Test Case'] for row in aes_data]
-    # FIXED: Changed from 'Enc Time (ms)' to 'Enc Mean (ms)'
     aes_times = [float(row['Enc Mean (ms)']) for row in aes_data]
     chacha_times = [float(row['Enc Mean (ms)']) for row in chacha_data]
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(12, 6))
 
     x = range(len(test_cases))
     width = 0.35
 
-    ax.bar([i - width / 2 for i in x], aes_times, width, label='AES-GCM', color='#4472C4')
-    ax.bar([i + width / 2 for i in x], chacha_times, width, label='ChaCha20-Poly1305', color='#ED7D31')
+    bars1 = ax.bar([i - width/2 for i in x], aes_times, width,
+                   label='AES-GCM', color='#FF6B6B', alpha=0.8)
+    bars2 = ax.bar([i + width/2 for i in x], chacha_times, width,
+                   label='ChaCha20-Poly1305', color='#4ECDC4', alpha=0.8)
 
-    ax.set_xlabel('Test Case', fontsize=12)
-    ax.set_ylabel('Encryption Time (ms)', fontsize=12)
-    ax.set_title('Encryption Speed Comparison: AES-GCM vs ChaCha20-Poly1305', fontsize=14, fontweight='bold')
+    ax.set_xlabel('Test Case', fontweight='bold', fontsize=11)
+    ax.set_ylabel('Encryption Time (ms)', fontweight='bold', fontsize=11)
+    ax.set_title('Encryption Time Comparison\n(Lower = Faster)',
+                fontweight='bold', fontsize=13)
     ax.set_xticks(x)
-    ax.set_xticklabels([tc.replace('Test ', 'T') for tc in test_cases], rotation=45, ha='right')
-    ax.legend()
+    ax.set_xticklabels(test_cases, rotation=45, ha='right', fontsize=9)
+    ax.legend(fontsize=10)
     ax.grid(axis='y', alpha=0.3)
 
     plt.tight_layout()
     plt.savefig('graph_encryption_time.png', dpi=300, bbox_inches='tight')
-    print(" Created: graph_encryption_time.png")
+    print("✓ Created: graph_encryption_time.png")
     plt.close()
 
 
-def create_throughput_chart(aes_data, chacha_data) :
-    """Creates bar chart comparing throughput"""
-    test_cases = [row['Test Case'] for row in aes_data]
+# ========== GRAPH 2: THROUGHPUT ==========
+def create_throughput_chart(aes_data, chacha_data):
+    """Line chart comparing throughput"""
+    sizes = [int(row['Message Size (B)']) for row in aes_data]
     aes_throughput = [float(row['Throughput (MB/s)']) for row in aes_data]
     chacha_throughput = [float(row['Throughput (MB/s)']) for row in chacha_data]
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(12, 6))
+
+    ax.plot(sizes, aes_throughput, marker='o', linewidth=2,
+           markersize=6, label='AES-GCM', color='#FF6B6B')
+    ax.plot(sizes, chacha_throughput, marker='s', linewidth=2,
+           markersize=6, label='ChaCha20-Poly1305', color='#4ECDC4')
+
+    ax.set_xlabel('Message Size (bytes)', fontweight='bold', fontsize=11)
+    ax.set_ylabel('Throughput (MB/s)', fontweight='bold', fontsize=11)
+    ax.set_title('Throughput vs Message Size\n(Higher = Better)',
+                fontweight='bold', fontsize=13)
+    ax.set_xscale('log')
+    ax.legend(fontsize=10)
+    ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig('graph_throughput.png', dpi=300, bbox_inches='tight')
+    print("✓ Created: graph_throughput.png")
+    plt.close()
+
+
+# ========== GRAPH 3: SCALING (Log-scale) ==========
+def create_scaling_chart(aes_data, chacha_data):
+    """Log-scale chart showing scaling behavior"""
+    sizes = [int(row['Message Size (B)']) for row in aes_data]
+    aes_times = [float(row['Enc Mean (ms)']) for row in aes_data]
+    chacha_times = [float(row['Enc Mean (ms)']) for row in chacha_data]
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+
+    ax.plot(sizes, aes_times, marker='o', linewidth=2,
+           markersize=6, label='AES-GCM', color='#FF6B6B')
+    ax.plot(sizes, chacha_times, marker='s', linewidth=2,
+           markersize=6, label='ChaCha20-Poly1305', color='#4ECDC4')
+
+    ax.set_xlabel('Message Size (bytes)', fontweight='bold', fontsize=11)
+    ax.set_ylabel('Encryption Time (ms)', fontweight='bold', fontsize=11)
+    ax.set_title('Scaling Behavior (Log-Log Scale)\n(Lower = Better)',
+                fontweight='bold', fontsize=13)
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.legend(fontsize=10)
+    ax.grid(True, alpha=0.3, which='both')
+
+    plt.tight_layout()
+    plt.savefig('graph_scaling.png', dpi=300, bbox_inches='tight')
+    print("✓ Created: graph_scaling.png")
+    plt.close()
+
+
+# ========== GRAPH 4: SAFETY (FAR) ==========
+def create_safety_chart(aes_data, chacha_data):
+    """Bar chart showing False Accept Rate (security)"""
+    test_cases = [row['Test Case'] for row in aes_data]
+    aes_far = [float(row['FAR (%)']) for row in aes_data]
+    chacha_far = [float(row['FAR (%)']) for row in chacha_data]
+
+    fig, ax = plt.subplots(figsize=(12, 6))
 
     x = range(len(test_cases))
     width = 0.35
 
-    ax.bar([i - width / 2 for i in x], aes_throughput, width, label='AES-GCM', color='#4472C4')
-    ax.bar([i + width / 2 for i in x], chacha_throughput, width, label='ChaCha20-Poly1305', color='#ED7D31')
+    ax.bar([i - width/2 for i in x], aes_far, width,
+          label='AES-GCM', color='#FF6B6B', alpha=0.8)
+    ax.bar([i + width/2 for i in x], chacha_far, width,
+          label='ChaCha20-Poly1305', color='#4ECDC4', alpha=0.8)
 
-    ax.set_xlabel('Test Case', fontsize=12)
-    ax.set_ylabel('Throughput (MB/s)', fontsize=12)
-    ax.set_title('Throughput Comparison: AES-GCM vs ChaCha20-Poly1305', fontsize=14, fontweight='bold')
+    ax.set_xlabel('Test Case', fontweight='bold', fontsize=11)
+    ax.set_ylabel('False Accept Rate (%)', fontweight='bold', fontsize=11)
+    ax.set_title('Security: Tampering Detection (FAR)\n(Lower = Better, 0% = Perfect)',
+                fontweight='bold', fontsize=13)
     ax.set_xticks(x)
-    ax.set_xticklabels([tc.replace('Test ', 'T') for tc in test_cases], rotation=45, ha='right')
-    ax.legend()
+    ax.set_xticklabels(test_cases, rotation=45, ha='right', fontsize=9)
+    ax.legend(fontsize=10)
     ax.grid(axis='y', alpha=0.3)
-
-    plt.tight_layout()
-    plt.savefig('graph_throughput.png', dpi=300, bbox_inches='tight')
-    print(" Created: graph_throughput.png")
-    plt.close()
-
-
-def create_safety_chart(aes_data, chacha_data) :
-    """Creates chart showing safety test results"""
-    algorithms = ['AES-GCM', 'ChaCha20-Poly1305']
-    pass_counts = [
-        sum(1 for row in aes_data if row['Safety'] == 'PASS'),
-        sum(1 for row in chacha_data if row['Safety'] == 'PASS')
-    ]
-    total_tests = [len(aes_data), len(chacha_data)]
-
-    fig, ax = plt.subplots(figsize=(8, 6))
-
-    x = range(len(algorithms))
-
-    ax.bar(x, pass_counts, color=['#70AD47', '#70AD47'], edgecolor='black', linewidth=1.5)
-
-    # Add "out of total" labels
-    for i, (passed, total) in enumerate(zip(pass_counts, total_tests)) :
-        ax.text(i, passed + 0.1, f'{passed}/{total}', ha='center', fontsize=12, fontweight='bold')
-
-    ax.set_ylabel('Tests Passed', fontsize=12)
-    ax.set_title('Safety Test Results (Tamper Detection)', fontsize=14, fontweight='bold')
-    ax.set_xticks(x)
-    ax.set_xticklabels(algorithms)
-    ax.set_ylim(0, max(total_tests) + 1)
-    ax.grid(axis='y', alpha=0.3)
+    ax.set_ylim([0, 1])  # 0-1% range
 
     plt.tight_layout()
     plt.savefig('graph_safety.png', dpi=300, bbox_inches='tight')
-    print(" Created: graph_safety.png")
-    plt.close()
-
-def create_scaling_line_graph(aes_data, chacha_data):
-    """Creates line graph showing encryption scaling behaviour"""
-
-    sizes = [row['Test Case'] for row in aes_data]
-    aes_times = [float(row['Enc Mean (ms)']) for row in aes_data]
-    chacha_times = [float(row['Enc Mean (ms)']) for row in chacha_data]
-
-    fig, ax = plt.subplots(figsize=(10,6))
-
-    ax.plot(sizes, aes_times, marker='o', label='AES-GCM', linewidth=2)
-    ax.plot(sizes, chacha_times, marker='o', label='ChaCha20-Poly1305', linewidth=2)
-
-    ax.set_xlabel("Message Size")
-    ax.set_ylabel("Encryption Time (ms)")
-    ax.set_title("Encryption Scaling Behaviour: AES-GCM vs ChaCha20-Poly1305")
-
-    ax.legend()
-    ax.grid(True)
-    # ax.set_xscale('log')
-
-    plt.xticks(rotation=45)
-    plt.tight_layout()
-
-    plt.savefig("graph_scaling.png", dpi=300)
-    print("Created: graph_scaling.png")
-
+    print("✓ Created: graph_safety.png")
     plt.close()
 
 
+# ========== GRAPH 5: Combined metrics ==========
+def create_summary_chart(aes_data, chacha_data):
+    """Multi-metric comparison for mobile range"""
+    # Filter for mobile messaging range (1KB to 10KB)
+    mobile_sizes = ['Test 7 - 1 KB', 'Test 8 - 2 KB', 'Test 9 - 5 KB', 'Test 10 - 10 KB']
 
-def create_comparison_summary(aes_data, chacha_data) :
-    """Creates summary comparison chart"""
-    # FIXED: Changed from 'Enc Time (ms)' to 'Enc Mean (ms)'
-    aes_avg_enc = sum(float(row['Enc Mean (ms)']) for row in aes_data) / len(aes_data)
-    chacha_avg_enc = sum(float(row['Enc Mean (ms)']) for row in chacha_data) / len(chacha_data)
+    aes_mobile = [row for row in aes_data if row['Test Case'] in mobile_sizes]
+    chacha_mobile = [row for row in chacha_data if row['Test Case'] in mobile_sizes]
 
-    # FIXED: Changed from 'Dec Time (ms)' to 'Dec Mean (ms)'
-    aes_avg_dec = sum(float(row['Dec Mean (ms)']) for row in aes_data) / len(aes_data)
-    chacha_avg_dec = sum(float(row['Dec Mean (ms)']) for row in chacha_data) / len(chacha_data)
+    # Average metrics
+    metrics = {
+        'Enc Time\n(ms)': (
+            np.mean([float(r['Enc Mean (ms)']) for r in aes_mobile]),
+            np.mean([float(r['Enc Mean (ms)']) for r in chacha_mobile])
+        ),
+        'Throughput\n(MB/s)': (
+            np.mean([float(r['Throughput (MB/s)']) for r in aes_mobile]),
+            np.mean([float(r['Throughput (MB/s)']) for r in chacha_mobile])
+        ),
+        'FAR\n(%)': (
+            np.mean([float(r['FAR (%)']) for r in aes_mobile]),
+            np.mean([float(r['FAR (%)']) for r in chacha_mobile])
+        )
+    }
 
-    aes_avg_throughput = sum(float(row['Throughput (MB/s)']) for row in aes_data) / len(aes_data)
-    chacha_avg_throughput = sum(float(row['Throughput (MB/s)']) for row in chacha_data) / len(chacha_data)
-
-    # Create grouped bar chart
     fig, ax = plt.subplots(figsize=(10, 6))
 
-    metrics = ['Avg Enc Time\n(ms)', 'Avg Dec Time\n(ms)', 'Avg Throughput\n(MB/s)']
-    aes_values = [aes_avg_enc, aes_avg_dec, aes_avg_throughput]
-    chacha_values = [chacha_avg_enc, chacha_avg_dec, chacha_avg_throughput]
-
-    x = range(len(metrics))
+    x = np.arange(len(metrics))
     width = 0.35
 
-    ax.bar([i - width / 2 for i in x], aes_values, width, label='AES-GCM', color='#4472C4')
-    ax.bar([i + width / 2 for i in x], chacha_values, width, label='ChaCha20-Poly1305', color='#ED7D31')
+    aes_vals = [v[0] for v in metrics.values()]
+    chacha_vals = [v[1] for v in metrics.values()]
 
-    ax.set_ylabel('Value', fontsize=12)
-    ax.set_title('Overall Performance Summary', fontsize=14, fontweight='bold')
+    bars1 = ax.bar(x - width/2, aes_vals, width, label='AES-GCM',
+                   color='#FF6B6B', alpha=0.8)
+    bars2 = ax.bar(x + width/2, chacha_vals, width, label='ChaCha20-Poly1305',
+                   color='#4ECDC4', alpha=0.8)
+
+    ax.set_ylabel('Value', fontweight='bold', fontsize=11)
+    ax.set_title('Mobile Messaging Performance Summary (1-10KB)\n(Normalized Metrics)',
+                fontweight='bold', fontsize=13)
     ax.set_xticks(x)
-    ax.set_xticklabels(metrics)
-    ax.legend()
+    ax.set_xticklabels(metrics.keys(), fontsize=10)
+    ax.legend(fontsize=10)
     ax.grid(axis='y', alpha=0.3)
 
     # Add value labels on bars
-    for i, (a, c) in enumerate(zip(aes_values, chacha_values)) :
-        ax.text(i - width / 2, a, f'{a:.3f}', ha='center', va='bottom', fontsize=9)
-        ax.text(i + width / 2, c, f'{c:.3f}', ha='center', va='bottom', fontsize=9)
+    for bars in [bars1, bars2]:
+        for bar in bars:
+            height = bar.get_height()
+            ax.text(bar.get_x() + bar.get_width()/2., height,
+                   f'{height:.2f}', ha='center', va='bottom', fontsize=9)
 
     plt.tight_layout()
     plt.savefig('graph_summary.png', dpi=300, bbox_inches='tight')
-    print(" Created: graph_summary.png")
+    print("✓ Created: graph_summary.png")
     plt.close()
 
 
-def main() :
-    print("=" * 60)
-    print(" " * 15 + "PERFORMANCE GRAPHS")
-    print("=" * 60)
+# ==========  GRAPH 6: TOTAL CPU TIME (Energy Proxy) ==========
+def create_cpu_time_chart(aes_data, chacha_data):
+    """Line chart showing total CPU time (energy proxy)"""
+    sizes = [int(row['Message Size (B)']) for row in aes_data]
+    aes_cpu = [float(row['Total CPU Time (ms)']) for row in aes_data]
+    chacha_cpu = [float(row['Total CPU Time (ms)']) for row in chacha_data]
 
-    # Check if matplotlib is installed
-    try :
-        import matplotlib
-        print("\n matplotlib is installed")
-    except ImportError :
-        print("\n✗ ERROR: matplotlib is not installed!")
-        print("\nPlease install it:")
-        print("  pip install matplotlib --break-system-packages")
-        return
+    fig, ax = plt.subplots(figsize=(12, 6))
+
+    ax.plot(sizes, aes_cpu, marker='o', linewidth=2,
+           markersize=6, label='AES-GCM', color='#FF6B6B')
+    ax.plot(sizes, chacha_cpu, marker='s', linewidth=2,
+           markersize=6, label='ChaCha20-Poly1305', color='#4ECDC4')
+
+    ax.set_xlabel('Message Size (bytes)', fontweight='bold', fontsize=11)
+    ax.set_ylabel('Total CPU Time (ms)', fontweight='bold', fontsize=11)
+    ax.set_title('Energy Efficiency: Total CPU Time\n(Lower = Better Battery Life)',
+                fontweight='bold', fontsize=13)
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.legend(fontsize=10)
+    ax.grid(True, alpha=0.3, which='both')
+
+    # Add annotation for mobile range
+    ax.axvspan(1024, 10240, alpha=0.1, color='green', label='Mobile Range (1-10KB)')
+
+    plt.tight_layout()
+    plt.savefig('graph_energy_cpu_time.png', dpi=300, bbox_inches='tight')
+    print("✓ Created: graph_energy_cpu_time.png")
+    plt.close()
+
+
+# ========== GRAPH 7: OPERATIONS PER SECOND ==========
+def create_ops_per_sec_chart(aes_data, chacha_data):
+    """Bar chart showing operations per second"""
+    test_cases = [row['Test Case'] for row in aes_data]
+    aes_ops = [float(row['Ops/sec']) for row in aes_data]
+    chacha_ops = [float(row['Ops/sec']) for row in chacha_data]
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+
+    x = range(len(test_cases))
+    width = 0.35
+
+    ax.bar([i - width/2 for i in x], aes_ops, width,
+          label='AES-GCM', color='#FF6B6B', alpha=0.8)
+    ax.bar([i + width/2 for i in x], chacha_ops, width,
+          label='ChaCha20-Poly1305', color='#4ECDC4', alpha=0.8)
+
+    ax.set_xlabel('Test Case', fontweight='bold', fontsize=11)
+    ax.set_ylabel('Operations per Second', fontweight='bold', fontsize=11)
+    ax.set_title('Energy Efficiency: Operations per Second\n(Higher = More Efficient)',
+                fontweight='bold', fontsize=13)
+    ax.set_xticks(x)
+    ax.set_xticklabels(test_cases, rotation=45, ha='right', fontsize=9)
+    ax.legend(fontsize=10)
+    ax.grid(axis='y', alpha=0.3)
+
+    plt.tight_layout()
+    plt.savefig('graph_energy_ops_per_sec.png', dpi=300, bbox_inches='tight')
+    print("✓ Created: graph_energy_ops_per_sec.png")
+    plt.close()
+
+
+# ========== GRAPH 8: CPU TIME PER BYTE ==========
+def create_cpu_per_byte_chart(aes_data, chacha_data):
+    """Line chart showing CPU time per byte (normalized energy cost)"""
+    sizes = [int(row['Message Size (B)']) for row in aes_data]
+    aes_per_byte = [float(row['CPU Time/Byte (us)']) for row in aes_data]
+    chacha_per_byte = [float(row['CPU Time/Byte (us)']) for row in chacha_data]
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+
+    ax.plot(sizes, aes_per_byte, marker='o', linewidth=2,
+           markersize=6, label='AES-GCM', color='#FF6B6B')
+    ax.plot(sizes, chacha_per_byte, marker='s', linewidth=2,
+           markersize=6, label='ChaCha20-Poly1305', color='#4ECDC4')
+
+    ax.set_xlabel('Message Size (bytes)', fontweight='bold', fontsize=11)
+    ax.set_ylabel('CPU Time per Byte (μs)', fontweight='bold', fontsize=11)
+    ax.set_title('Normalized Energy Cost\n(Lower = More Energy Efficient per Byte)',
+                fontweight='bold', fontsize=13)
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.legend(fontsize=10)
+    ax.grid(True, alpha=0.3, which='both')
+
+    # Add vertical line at crossover point (~10KB)
+    ax.axvline(x=10240, color='red', linestyle='--', linewidth=1,
+              alpha=0.5, label='Crossover (~10KB)')
+
+    plt.tight_layout()
+    plt.savefig('graph_energy_cpu_per_byte.png', dpi=300, bbox_inches='tight')
+    print("✓ Created: graph_energy_cpu_per_byte.png")
+    plt.close()
+
+
+# ========== MAIN FUNCTION ==========
+def main():
+    """Generate all graphs"""
+    print("\n" + "=" * 50)
+    print("GRAPH GENERATOR - WITH ENERGY METRICS")
+    print("=" * 50 + "\n")
 
     # Read data
-    print("\nReading Results.csv...")
-    data = read_results()
-
-    if data is None :
+    result = read_results()
+    if result is None:
         return
 
-    aes_data, chacha_data = data
-    print(f" Found {len(aes_data)} AES tests and {len(chacha_data)} ChaCha20 tests")
+    aes_data, chacha_data = result
 
-    # Create graphs
-    print("\nGenerating graphs...")
-    print("-" * 60)
+    print("\n" + "-" * 70)
+    print("GENERATING GRAPHS...")
+    print("-" * 70 + "\n")
 
+    # Original 5 graphs
     create_encryption_time_chart(aes_data, chacha_data)
     create_throughput_chart(aes_data, chacha_data)
+    create_scaling_chart(aes_data, chacha_data)
     create_safety_chart(aes_data, chacha_data)
-    create_comparison_summary(aes_data, chacha_data)
-    create_scaling_line_graph(aes_data, chacha_data)
+    create_summary_chart(aes_data, chacha_data)
 
-    print("-" * 60)
-    print("\n All graphs created successfully!")
-    print("\nGenerated files:")
-    print("  • graph_encryption_time.png - Encryption speed comparison")
-    print("  • graph_throughput.png      - Throughput comparison")
-    print("  • graph_safety.png          - Safety test results")
-    print("  • graph_summary.png         - Overall summary")
-    print("  • graph_scaling_line.png         - ")
+    # NEW: 3 energy efficiency graphs
+    create_cpu_time_chart(aes_data, chacha_data)
+    create_ops_per_sec_chart(aes_data, chacha_data)
+    create_cpu_per_byte_chart(aes_data, chacha_data)
 
-    print("\n:")
-    print(" (This Results is created used in the Report)")
-    print("  Add figure captions:")
-    print("    Figure 6.1: Encryption Speed Comparison")
-    print("    Figure 6.2: Throughput Comparison")
-    print("    Figure 6.3: Safety Test Results")
-    print("    Figure 6.4: Overall Performance Summary")
+    print("\n" + "=" * 50)
+    print(" ALL 8 GRAPHS CREATED SUCCESSFULLY!")
+    print("=" * 50)
+    print("\nGRAPHS CREATED:")
+    print("  1. graph_encryption_time.png    - Encryption time comparison")
+    print("  2. graph_throughput.png          - Throughput vs message size")
+    print("  3. graph_scaling.png             - Scaling behavior (log-log)")
+    print("  4. graph_safety.png              - Security (FAR)")
+    print("  5. graph_summary.png             - Mobile range summary")
+    print("  6. graph_energy_cpu_time.png     - Total CPU time (energy proxy)")
+    print("  7. graph_energy_ops_per_sec.png  - Operations per second")
+    print("  8. graph_energy_cpu_per_byte.png - CPU time per byte")
+    print("\n" + "=" * 50)
 
-    print("\n" + "=" * 60)
 
-
-if __name__ == "__main__" :
+if __name__ == "__main__":
     main()

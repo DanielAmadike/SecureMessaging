@@ -1,5 +1,5 @@
 """
-Cryptographic Properties Graphs - SIMPLE VERSION
+Cryptographic Properties Graphs
 Reads from crypto_results.csv
 
 Requirements:
@@ -112,8 +112,8 @@ if __name__ == "__main__" :
         graph_avalanche(data)
         graph_entropy(data)
 
-        print("\n" + "=" * 60)
+        print("\n" + "=" * 50)
         print("DONE! Created 2 graphs:")
         print("  - graph_avalanche.png")
         print("  - graph_entropy.png")
-        print("=" * 60 + "\n")
+        print("=" * 50 + "\n")

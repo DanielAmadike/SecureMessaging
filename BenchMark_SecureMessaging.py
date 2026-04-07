@@ -10,7 +10,6 @@ Average mean, Standard Deviation and Confidence interval 95%
 
 
 Compares AES vs ChaCha20 across multiple test cases.
-
 Measures:
   - Speed      : Encryption time, Decryption time, Throughput
   - Safety     : Tamper detection (AEAD authentication test)
@@ -18,8 +17,9 @@ Measures:
 
 Output:
   - Printed table
-  - Results.csv..
+  - Results.csv
 """
+
 from Crypto.Cipher import AES, ChaCha20_Poly1305
 from Crypto.Random import get_random_bytes
 import hashlib
@@ -38,8 +38,6 @@ ITERATIONS = 500  # Increased for statistical rigor
 
 
 # VALIDATION (NIST + RFC Test Vectors)
-
-
 def validate_aes() :
     """NIST FIPS 197 Known Answer Test"""
     key = bytes.fromhex("00000000000000000000000000000000")
@@ -106,7 +104,7 @@ def build_expanded_dataset() -> List[Tuple[str, bytes]] :
 
     """
     return [
-        # TINY - Mobile messaging (The primary focus)
+        # TINY
         ("Test 1 - 16B", deterministic_bytes("test1", 16)),
         ("Test 2 - 32B", deterministic_bytes("test2", 32)),
         ("Test 3 - 64B", deterministic_bytes("test3", 64)),
@@ -114,7 +112,7 @@ def build_expanded_dataset() -> List[Tuple[str, bytes]] :
         ("Test 5 - 256B", deterministic_bytes("test5", 256)),
         ("Test 6 - 512B", deterministic_bytes("test6", 512)),
 
-        # SMALL - Chat history & small files
+        # SMALL - Chat history & small files Mobile messaging (The primary focus)
         ("Test 7 - 1 KB", deterministic_bytes("test7", 1024)),
         ("Test 8 - 2 KB", deterministic_bytes("test8", 2 * 1024)),
         ("Test 9 - 5 KB", deterministic_bytes("test9", 5 * 1024)),
@@ -262,23 +260,24 @@ def measure_with_statistics(enc_fn, dec_fn, msg: bytes) -> dict :
     dec_mean = statistics.mean(dec_times)
     dec_stdev = statistics.stdev(dec_times)
     dec_variance = statistics.variance(dec_times)
-    dec_ci = 1.96 * (dec_stdev / math.sqrt(ITERATIONS))
+    dec_ci = 1.96 * (dec_stdev / math.sqrt(ITERATIONS))  # 95% CI
 
-    # Throughput
+    # Throughput (BOTH encryption and decryption)
     size_mb = len(msg) / (1024 * 1024)
-    enc_sec = enc_mean / 1000
-    throughput = size_mb / enc_sec if enc_sec > 0 else 0.0
+    enc_throughput = size_mb / (enc_mean / 1000) if enc_mean > 0 else 0.0
+    dec_throughput = size_mb / (dec_mean / 1000) if dec_mean > 0 else 0.0
 
     return {
         'enc_mean' : enc_mean,
         'enc_stdev' : enc_stdev,
         'enc_variance' : enc_variance,
         'enc_ci' : enc_ci,
+        'enc_throughput' : enc_throughput,
         'dec_mean' : dec_mean,
         'dec_stdev' : dec_stdev,
         'dec_variance' : dec_variance,
         'dec_ci' : dec_ci,
-        'throughput' : throughput,
+        'dec_throughput' : dec_throughput,
         'raw_enc_times' : enc_times
     }
 
@@ -354,18 +353,20 @@ def run_benchmark() :
 
         # Store AES results
         rows.append({
-            'Algorithm' : 'AES',
+            'Algorithm' : 'AES-GCM',
             'Test Case' : test_name,
             'Message Size (B)' : len(msg),
             'Enc Mean (ms)' : round(aes_stats['enc_mean'], 6),
             'Enc StdDev (ms)' : round(aes_stats['enc_stdev'], 6),
             'Enc 95% CI' : f"±{aes_stats['enc_ci']:.6f}",
+            'Enc Throughput (MB/s)' : round(aes_stats['enc_throughput'], 4),
             'Dec Mean (ms)' : round(aes_stats['dec_mean'], 6),
-            'Throughput (MB/s)' : round(aes_stats['throughput'], 4),
+            'Dec StdDev (ms)' : round(aes_stats['dec_stdev'], 6),
+            'Dec 95% CI' : f"±{aes_stats['dec_ci']:.6f}",
+            'Dec Throughput (MB/s)' : round(aes_stats['dec_throughput'], 4),
             'Safety' : aes_safety,
             'FAR (%)' : round(aes_far, 2)
         })
-
         # Store ChaCha20 results
         rows.append({
             'Algorithm' : 'ChaCha20-Poly1305',
@@ -374,8 +375,11 @@ def run_benchmark() :
             'Enc Mean (ms)' : round(chacha_stats['enc_mean'], 6),
             'Enc StdDev (ms)' : round(chacha_stats['enc_stdev'], 6),
             'Enc 95% CI' : f"±{chacha_stats['enc_ci']:.6f}",
+            'Enc Throughput (MB/s)' : round(chacha_stats['enc_throughput'], 4),
             'Dec Mean (ms)' : round(chacha_stats['dec_mean'], 6),
-            'Throughput (MB/s)' : round(chacha_stats['throughput'], 4),
+            'Dec StdDev (ms)' : round(chacha_stats['dec_stdev'], 6),
+            'Dec 95% CI' : f"±{chacha_stats['dec_ci']:.6f}",
+            'Dec Throughput (MB/s)' : round(chacha_stats['dec_throughput'], 4),
             'Safety' : chacha_safety,
             'FAR (%)' : round(chacha_far, 2)
         })

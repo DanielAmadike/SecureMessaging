@@ -417,9 +417,9 @@ def demo_two_way_messaging() :
     # Validate encryption first
     run_validation()
 
-    print("=" * 70)
+    print("=" * 50)
     print("SCENARIO: Alice and Bob exchange encrypted messages")
-    print("=" * 70)
+    print("=" * 50)
 
     # Initialize users
     print("\n[1] Creating users...")
@@ -478,7 +478,7 @@ def demo_two_way_messaging() :
 
     print("\n" + "=" * 70)
     print("TWO-WAY MESSAGING DEMO COMPLETE")
-    print("=" * 70)
+    print("=" * 50)
     print("\nDemonstrated:")
     print("   NIST/RFC test vector validation")
     print("   Alice -> Bob messaging")
@@ -501,15 +501,15 @@ def interactive_mode() :
     """
     print("\n" + "=" * 70)
     print("INTERACTIVE SECURE MESSAGING")
-    print("=" * 70)
+    print("=" * 50)
 
     # Validate first
     run_validation()
 
     # Create users
-    print("\n" + "=" * 70)
+    print("\n" + "=" * 50)
     print("STEP 1: CREATE USERS")
-    print("=" * 70)
+    print("=" * 50)
     user1_name = input("User 1 name: ")
     user2_name = input("User 2 name: ")
 
@@ -519,7 +519,7 @@ def interactive_mode() :
     # Establish shared keys - MANDATORY
     print("\n" + "=" * 70)
     print("STEP 2: ESTABLISH SHARED ENCRYPTION KEY")
-    print("=" * 70)
+    print("=" * 50)
     print(f"Both {user1_name} and {user2_name} need a shared secret to encrypt messages.")
     print("This simulates secure key exchange (like Diffie-Hellman).")
 
@@ -537,12 +537,12 @@ def interactive_mode() :
 
     print("\n" + "=" * 70)
     print(" SECURE CHANNEL ESTABLISHED")
-    print("=" * 70)
+    print("=" * 50)
     print(f"  Encryption: {algorithm}")
     print(f"  Key Length: {'128-bit' if algorithm == 'AES' else '256-bit'}")
     print(f"  Authentication: {'GCM' if algorithm == 'AES' else 'Poly1305'}")
     print(f"  Digital Signatures: RSA-2048")
-    print("=" * 70)
+    print("=" * 50)
 
     input("\nPress Enter to start messaging...\n")
 
@@ -597,8 +597,9 @@ def interactive_mode() :
 
 
 if __name__ == "__main__" :
-    print("=" * 70)
+    print("=" * 50)
     print("MESSAGING SYSTEM ")
+    print("=" * 50)
 
 
     print("\nFeatures:")

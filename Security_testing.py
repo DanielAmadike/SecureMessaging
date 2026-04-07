@@ -58,9 +58,9 @@ def test_mitm_attack(algorithm_name, encrypt_fn, decrypt_fn) :
       3. Attacker tries to read it WITHOUT the key
       4. Expected: Attacker CANNOT decrypt (attack fails)
     """
-    print(f"\n{'=' * 70}")
+    print(f"\n{'=' * 50}")
     print(f"TEST 1: MITM ATTACK - {algorithm_name}")
-    print(f"{'=' * 70}")
+    print(f"{'=' * 50}")
 
     # Step 1: Alice encrypts message
     original_message = "Transfer $10,000 to account 987654321"
@@ -89,7 +89,7 @@ def test_mitm_attack(algorithm_name, encrypt_fn, decrypt_fn) :
     # Conclusion
     print(f"RESULT: MITM ATTACK BLOCKED")
     print(f"Encryption prevents unauthorized parties from reading messages.")
-    print(f"{'=' * 70}")
+    print(f"{'=' * 50}")
     return "PASS"
 
 
@@ -100,9 +100,8 @@ def test_key_strength() :
     Compares key strengths of AES and ChaCha20.
     Shows why both algorithms are secure against brute force.
     """
-    print(f"\n{'=' * 70}")
+    print(f"\n{'=' * 50}")
     print(f"TEST 2: KEY STRENGTH EVALUATION")
-    print(f"{'=' * 70}")
 
     print(f"\n[1] Key Space Analysis:")
     print(f"\n{'Algorithm':<20} {'Key Size':<15} {'Possible Keys':<25} {'Status'}")

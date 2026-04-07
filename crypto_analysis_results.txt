@@ -1,73 +1,11 @@
-======================================================================
-               CRYPTOGRAPHIC TESTS
-======================================================================
-
-Testing AES-GCM vs ChaCha20-Poly1305
-This validates cryptographic properties beyond AEAD guarantees
-
-----------------------------------------------------------------------
-TEST 1: AVALANCHE EFFECT
-----------------------------------------------------------------------
-
-Objective: Verify that 1-bit plaintext change causes ~50% ciphertext change
-Method: Flip 1 random bit in plaintext, measure ciphertext bit differences
-Tests: 100 iterations per algorithm
-Standard: > 45% bit change (ideal: 45-55%)
-
-RESULTS:
-
-  AES-GCM:            49.89% +/- 2.18%
-  ChaCha20-Poly1305:  50.05% +/- 2.15%
-
-EVALUATION:
-  AES-GCM:            PASS (Standard: 45-55%)
-  ChaCha20-Poly1305:  PASS (Standard: 45-55%)
-
-CONCLUSION: Both algorithms demonstrate excellent avalanche effect,
-            confirming strong diffusion property (confusion/diffusion).
-
-----------------------------------------------------------------------
-TEST 2: ENTROPY ANALYSIS
-----------------------------------------------------------------------
-
-Objective: Verify ciphertext exhibits near-maximal randomness
-Method: Calculate Shannon entropy of ciphertext
-Formula: H = -Sum p(x) * log2(p(x))
-Standard: > 7.9 (maximum: 8.0)
-
-RESULTS:
-
-  Message Size    AES-GCM    ChaCha20-Poly1305
-  --------------------------------------------------
-  64B             5.7695     5.7070
-  1KB             7.8260     7.8067
-  10KB            7.9799     7.9835
-
-EVALUATION:
-  AES (10KB):     7.9799  PASS (Standard: > 7.9)
-  ChaCha (10KB):  7.9835  PASS (Standard: > 7.9)
-
-Note: Evaluation based on 10KB test (64B and 1KB insufficient for > 7.9 entropy)
-
-CONCLUSION: Both algorithms produce near-maximal entropy ciphertext,
-            confirming unpredictable, cryptographically secure output.
-
-======================================================================
-OVERALL SUMMARY
+CRYPTOGRAPHIC PROPERTY TEST RESULTS
 ======================================================================
 
-Cryptographic Results:
+AVALANCHE EFFECT:
+  AES-GCM:            49.76% +/- 2.17%
+  ChaCha20-Poly1305:  49.94% +/- 2.15%
 
-  [PASS] Avalanche Effect: Both algorithms ~50% (ideal diffusion)
-  [PASS] Entropy: Both algorithms ~8.0 (maximal randomness)
-
-CONCLUSION:
-Both AES-GCM and ChaCha20-Poly1305 demonstrate excellent cryptographic
-properties beyond basic AEAD guarantees. The strong avalanche effect
-confirms effective confusion/diffusion, while near-maximal entropy
-validates ciphertext unpredictability.
-
-These results support the security claims made in performance testing,
-confirming both algorithms provide robust security for secure messaging.
-
-======================================================================
+ENTROPY ANALYSIS:
+  64B    AES=5.8750  ChaCha=5.6327
+  1KB    AES=7.8290  ChaCha=7.8135
+  10KB   AES=7.9837  ChaCha=7.9838
